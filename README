@@ -1,0 +1,21 @@
+tOAuth Class
+============
+
+PHP Class for Twitter OAuth.
+
+Created by:
+Sergio Cruz aka scromega
+
+Released under GNU Affero General Public License, version 3
+
+Code based on:
+http://github.com/abraham/twitteroauth
+
+And using OAuth lib:
+http://oauth.googlecode.com/svn/code/php/
+
+You can find more info in my blog (spanish):
+http://scromega.net/6-toauth-la-api-de-twitter-con-oauth-y-php.html
+
+Contact in:
+scr.omega at gmail dot com
