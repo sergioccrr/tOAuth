@@ -1,77 +1,328 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <meta charset='utf-8'>
-
-  <title>scromega/tOAuth @ GitHub</title>
-
-  <style type="text/css">
-    body {
-      margin-top: 1.0em;
-      background-color: #e7eb6c;
-      font-family: Helvetica, Arial, FreeSans, san-serif;
-      color: #000000;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-    h1 { font-size: 3.8em; color: #181493; margin-bottom: 3px; }
-    h1 .small { font-size: 0.4em; }
-    h1 a { text-decoration: none }
-    h2 { font-size: 1.5em; color: #181493; }
-    h3 { text-align: center; color: #181493; }
-    a { color: #181493; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-    pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-  </style>
+<title>tOAuth: la API de Twitter con OAuth y PHP :: scromega blog</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link rel="stylesheet" href="http://scromega.github.com/tuentiAPI/files/style.css" />
 </head>
-
 <body>
-  <a href="http://github.com/scromega/tOAuth"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
 
-  <div id="container">
+<div id="container">
 
-    <div class="download">
-      <a href="http://github.com/scromega/tOAuth/zipball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
-      <a href="http://github.com/scromega/tOAuth/tarball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
-    </div>
+<div id="header">
+	<h1><a name="tmp"><span>scromega blog</span></a></h1>
+</div>
 
-    <h1><a href="http://github.com/scromega/tOAuth">tOAuth</a>
-      <span class="small">by <a href="http://github.com/scromega">scromega</a></span></h1>
+<div id="sidebar">
+	<div class="menu1">
+	Backup de la entrada referente a <a href="https://github.com/scromega/tOAuth">tOAuth</a> aparecida en mi viejo y desaparecido blog.
+	</div>
+</div>
 
-    <div class="description">
-      PHP Class for Twitter OAuth
-    </div>
-
-    <h2>Authors</h2>
-<p>Sergio (scr.omega@gmail.com)<br/><br/>      </p>
-<h2>Contact</h2>
-<p>Sergio (scr.omega@gmail.com)<br/>      </p>
+<div id="main">
 
 
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="http://github.com/scromega/tOAuth/zipball/master">zip</a> or
-      <a href="http://github.com/scromega/tOAuth/tarball/master">tar</a> formats.
-    </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/scromega/tOAuth</pre>
-    </p>
+<div class="entry">
 
-    <div class="footer">
-      get the source code on GitHub : <a href="http://github.com/scromega/tOAuth">scromega/tOAuth</a>
-    </div>
+<h2>tOAuth: la API de Twitter con OAuth y PHP</h2>
+<span class="s_date">19 Febrero 2010</span>
 
-  </div>
+ <span class="s_comments"><a href="#comentarios">18 Comentario(s)</a></span>
 
-  
+
+
+<p>La API de Twitter dispone de soporte para <a href="http://oauth.net/" target="_blank">OAuth</a>, un protocolo que permite que los usuarios puedan hacer uso de aplicaciones sin tener que introducir su usuario y contraseña, evitando el riesgo que esto conlleva. Para los usuarios, este protocolo es una ventaja, además de por la seguridad que ofrece, por la comodidad a la hora de autentificarse en las aplicaciones (para lo que bastan unos simples clics del ratón), pero para los desarrolladores no lo es tanto. Desde mi (humilde) punto de vista, al OAuth le pueden dar por saco.<br />
+<br />
+En la documentación oficial de la API hay un código de ejemplo alojado en GitHub de cómo usar OAuth con PHP. Este ejemplo no me gustaba y me parecía lioso, por eso me puse a ver cómo funcionaba hasta conseguir crear un clon más sencillo. El resultado, tOAuth, una class en PHP que permite usar de manera simple la API de Twitter con OAuth.<br />
+<br />
+Podéis encontrar el código de la class junto con un ejemplo de uso en el repositorio <a href="http://github.com/scromega/tOAuth" target="_blank"><b>tOAuth</b></a> de mi cuenta de GitHub. El ejemplo creo que es bastante explícito por sí solo, pero de todas formas a continuación procedo a explicarlo.<br /></p>
+
+<a name="continuar"></a>
+<p><br />
+<b>Registro:</b><br />
+Para hacer uso de OAuth en nuestras aplicaciones, deberemos tenerlas registradas como tales en Twitter. Esto se logra desde la página <a href="http://twitter.com/oauth_clients/" target="_blank">http://twitter.com/oauth_clients/</a> en la que tenemos un formulario para hacer esto y donde podremos administrar todas las aplicaciones que registremos. En dicho formulario tendremos que rellenar varios campos, entre ellos:<br />
+<ul>
+<li><u>Application Type:</u> Evidentemente tendremos que marcar &quot;Browser&quot;</li>
+<li><u>Callback URL:</u> La URL a la que Twitter redirigirá a los usuarios una vez autentificados. Por ejemplo: http://dominio.com/toauth</li>
+<li><u>Default Access type:</u> Marcamos &quot;Read &amp; Write&quot; para que nuestra aplicación sea capaz de enviar datos (por ejemplo, para actualizar el timeline del usuario)</li>
+<li><u>Use Twitter for login:</u> Marcamos &quot;Yes, use Twitter for login&quot;</li>
+</ul><br />
+Una vez registrada la aplicación, se nos asignarán dos <i>keys</i> fundamentales para el uso de OAuth. En el ejemplo, estas dos keys son definidas como constantes para su posterior uso:<br />
+<br />
+<pre class="code"><code><span style="color: #000000">
+<br /><span style="color: #0000BB">&lt;?php<br /><br />define</span><span style="color: #007700">(</span><span style="color: #DD0000">'CONSUMER_KEY'</span><span style="color: #007700">,&nbsp;</span><span style="color: #DD0000">'xxxxxxxxxxxxxxxxxxxxx'</span><span style="color: #007700">);<br /></span><span style="color: #0000BB">define</span><span style="color: #007700">(</span><span style="color: #DD0000">'CONSUMER_SECRET'</span><span style="color: #007700">,&nbsp;</span><span style="color: #DD0000">'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'</span><span style="color: #007700">);<br /></span>
+</span>
+</code></pre><br />
+<br />
+Todo usuario que quiera hacer uso de nuestra aplicación tendrá que autentificarse. Este proceso consta de dos partes. Lo primero será obtener el link de Twitter al que tendrá que entrar el usuario para autentificarse:<br />
+<br />
+<pre class="code"><code><span style="color: #000000">
+<span style="color: #0000BB">&lt;?php<br /><br />$connection&nbsp;</span><span style="color: #007700">=&nbsp;new&nbsp;</span><span style="color: #0000BB">tOAuth</span><span style="color: #007700">(</span><span style="color: #0000BB">CONSUMER_KEY</span><span style="color: #007700">,&nbsp;</span><span style="color: #0000BB">CONSUMER_SECRET</span><span style="color: #007700">);<br /></span><span style="color: #0000BB">$a&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">$connection</span><span style="color: #007700">-&gt;</span><span style="color: #0000BB">authenticate</span><span style="color: #007700">(</span><span style="color: #0000BB">true</span><span style="color: #007700">);<br /></span>
+</span>
+</code></pre><br />
+Esto nos devolverá un array con dos token que deberemos almacenar de forma temporal (por ejemplo en una sesión) y el link mencionado anteriormente.<br />
+<br />
+Una vez que el usuario vuelva a nuestra página tendremos que hacer una nueva petición enviando los token de la anterior (<i>$_SESSION['toauth_rt']</i> y <i>$_SESSION['toauth_rts']</i> en el ejemplo):<br />
+<br />
+<pre class="code"><code><span style="color: #000000">
+<span style="color: #0000BB">&lt;?php<br /><br />$connection&nbsp;</span><span style="color: #007700">=&nbsp;new&nbsp;</span><span style="color: #0000BB">tOAuth</span><span style="color: #007700">(</span><span style="color: #0000BB">CONSUMER_KEY</span><span style="color: #007700">,&nbsp;</span><span style="color: #0000BB">CONSUMER_SECRET</span><span style="color: #007700">,&nbsp;</span><span style="color: #0000BB">$_SESSION</span><span style="color: #007700">[</span><span style="color: #DD0000">'toauth_rt'</span><span style="color: #007700">],&nbsp;</span><span style="color: #0000BB">$_SESSION</span><span style="color: #007700">[</span><span style="color: #DD0000">'toauth_rts'</span><span style="color: #007700">]);<br /></span><span style="color: #0000BB">$a&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">$connection</span><span style="color: #007700">-&gt;</span><span style="color: #0000BB">authenticate</span><span style="color: #007700">(</span><span style="color: #0000BB">false</span><span style="color: #007700">);</span>
+</span>
+</code></pre><br />
+Nuevamente nos devolverá un array, salvo que en este caso contendrá sólo dos token que son los que usaremos en las peticiones a la API como si del usuario/contraseña se tratara. Si queremos podemos guardarlo de forma permanente (por ejemplo, en una base de datos) para usos futuros.<br />
+<br />
+<b>Peticiones:</b><br />
+Para realizar peticiones (ya sean GET o POST) a la API lo primero será crear una nueva instancia de la class pasándole los token del usuario que obtuvimos en la autentificación (<i>$_SESSION['toauth_at']</i> y <i>$_SESSION['toauth_ats']</i> en el ejemplo):<br />
+<br />
+<pre class="code"><code><span style="color: #000000">
+<span style="color: #0000BB">&lt;?php<br />$connection&nbsp;</span><span style="color: #007700">=&nbsp;new&nbsp;</span><span style="color: #0000BB">tOAuth</span><span style="color: #007700">(</span><span style="color: #0000BB">CONSUMER_KEY</span><span style="color: #007700">,&nbsp;</span><span style="color: #0000BB">CONSUMER_SECRET</span><span style="color: #007700">,&nbsp;</span><span style="color: #0000BB">$_SESSION</span><span style="color: #007700">[</span><span style="color: #DD0000">'toauth_at'</span><span style="color: #007700">],&nbsp;</span><span style="color: #0000BB">$_SESSION</span><span style="color: #007700">[</span><span style="color: #DD0000">'toauth_ats'</span><span style="color: #007700">]);</span>
+</span>
+</code></pre><br />
+Después ya podremos hacer las <a href="http://apiwiki.twitter.com/Twitter-API-Documentation" target="_blank">peticiones</a> que necesitemos a la API. Ejemplos:<br />
+<br />
+<pre class="code"><code><span style="color: #000000">
+<span style="color: #0000BB">&lt;?php<br /><br /></span><span style="color: #FF8000">#&nbsp;GET&nbsp;Usage:&nbsp;array&nbsp;get&nbsp;(&nbsp;string&nbsp;$method&nbsp;[,&nbsp;array&nbsp;$args&nbsp;]&nbsp;)<br />#&nbsp;POST&nbsp;Usage:&nbsp;array&nbsp;post&nbsp;(&nbsp;string&nbsp;$method&nbsp;,&nbsp;array&nbsp;$args&nbsp;)<br /><br /></span><span style="color: #0000BB">$r&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">$connection</span><span style="color: #007700">-&gt;</span><span style="color: #0000BB">get</span><span style="color: #007700">(</span><span style="color: #DD0000">'account/verify_credentials'</span><span style="color: #007700">);<br /><br /></span><span style="color: #0000BB">$r&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">$connection</span><span style="color: #007700">-&gt;</span><span style="color: #0000BB">post</span><span style="color: #007700">(</span><span style="color: #DD0000">'statuses/update'</span><span style="color: #007700">,&nbsp;array(</span><span style="color: #DD0000">'status'</span><span style="color: #007700">=&gt;</span><span style="color: #DD0000">'Hello&nbsp;World'</span><span style="color: #007700">));</span>
+</span>
+</code></pre><br />
+<br />
+Y esto es todo, espero que os sea de utilidad tanto como a mí. Si queréis estar al tanto de cambios y actualizaciones, podéis suscribiros al repositorio en GitHub. Para cualquier duda, sugerencia, crítica o lo que sea, ya sabéis, dejad un comentario :)</p>
+
+</div>
+
+<hr class="separator" />
+<div class="entry">
+
+<a name="comentarios"></a>
+<h4>Comentarios</h4>
+
+
+					<div class="comment"><a name="comment-1"></a>
+			<div class="cavatar"><img src="http://www.gravatar.com/avatar/038ad2f0a5cdecb63505e4089b303a34?s=54&amp;d=http://scromega.github.com/tuentiAPI/files/no-avatar.png" alt="" width="54" height="54" /></div>
+			<div class="ccontent">
+				<div class="cinfo">
+				<a href="#comment-1">#1</a> <b>rayko</b> el 19 Febrero 2010.
+								</div>
+				<p>wow :) por fin lo sacas xDDD gracias :3</p>
+			</div>
+		</div>
+		<!-- <hr /> -->				<div class="comment"><a name="comment-2"></a>
+			<div class="cavatar"><img src="http://www.gravatar.com/avatar/3f7dc5cc7a9a080a6780113c54102ddb?s=54&amp;d=http://scromega.github.com/tuentiAPI/files/no-avatar.png" alt="" width="54" height="54" /></div>
+			<div class="ccontent">
+				<div class="cinfo">
+				<a href="#comment-2">#2</a> <b>Xytry</b> el 1 Marzo 2010.
+								</div>
+				<p>Hola, solo una duda, estoy usando la siguiente funcion para obtener los replies:<br />
+<br />
+$r = $connection-&gt;get('statuses/mentions'); print_r($sc);<br />
+<br />
+ pero me lo devuelve en texto plano, &lt;pregunta noob&gt; como le meto CSS??? &lt;/pregunta noob&gt; <br />
+<br />
+<br />
+Saludos ! ñ_ñ</p>
+			</div>
+		</div>
+		<!-- <hr /> -->				<div class="comment"><a name="comment-3"></a>
+			<div class="cavatar"><img src="http://www.gravatar.com/avatar/038ad2f0a5cdecb63505e4089b303a34?s=54&amp;d=http://scromega.github.com/tuentiAPI/files/no-avatar.png" alt="" width="54" height="54" /></div>
+			<div class="ccontent">
+				<div class="cinfo">
+				<a href="#comment-3">#3</a> <b>rayko</b> el 5 Marzo 2010.
+								</div>
+				<p>te tocara meterlo en un foreach (por ejemplo) y asi recorrer todo el array, dentro del for le metes los que quieras mas o menos:<br />
+<br />
+<pre class="code"><code><span style="color: #000000">
+<br /><span style="color: #0000BB">&lt;?php<br /><br />$mentions&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">$connection</span><span style="color: #007700">-&gt;</span><span style="color: #0000BB">get</span><span style="color: #007700">(</span><span style="color: #DD0000">'statuses/mentions'</span><span style="color: #007700">);<br /><br />foreach(</span><span style="color: #0000BB">$mentions&nbsp;</span><span style="color: #007700">as&nbsp;</span><span style="color: #0000BB">$notes</span><span style="color: #007700">){<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</span><span style="color: #DD0000">'&lt;div&nbsp;class="note"&gt;'</span><span style="color: #007700">;<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</span><span style="color: #DD0000">"&lt;div&nbsp;class=\"avatar\"&gt;&lt;img&nbsp;alt=\"avatar\"&nbsp;src=\"{$notes[$type]['profile_image_url']}\"&nbsp;height=\"42\"&nbsp;width=\"42\"&nbsp;/&gt;&lt;/div&gt;"</span><span style="color: #007700">;<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</span><span style="color: #DD0000">'&lt;div&nbsp;class="user"&gt;'</span><span style="color: #007700">;<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</span><span style="color: #DD0000">"&lt;span&gt;{$notes[$type]['screen_name']}&nbsp;{$source}&nbsp;&lt;a&nbsp;href=\"#\"&gt;&lt;/a&gt;{$notes['created_at']}&lt;/span&gt;"</span><span style="color: #007700">;<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</span><span style="color: #DD0000">"&lt;p&gt;{$notes['text']}&lt;/p&gt;"</span><span style="color: #007700">;<br />&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;</span><span style="color: #DD0000">'&lt;/div&gt;&lt;/div&gt;'</span><span style="color: #007700">;<br />}<br /></span>
+</span>
+</code></pre><br />
+<br />
+mas o menos quizas asi, este ejemplo te lo estoy haciendo con una class de Twitter que me pasó @scromega hace tiempo, supongo que con esta class nueva sera igual, si no ahí tienes una especie de guia por donde ir xD<br />
+<br />
+saludos y espero que algo te ayudase xD :)</p>
+			</div>
+		</div>
+		<!-- <hr /> -->				<div class="comment"><a name="comment-4"></a>
+			<div class="cavatar"><img src="http://www.gravatar.com/avatar/bb95ccd3da4bb39b7adffa2403e3c809?s=54&amp;d=http://scromega.github.com/tuentiAPI/files/no-avatar.png" alt="" width="54" height="54" /></div>
+			<div class="ccontent">
+				<div class="cinfo">
+				<a href="#comment-4">#4</a> <b><a rel="nofollow" href="http://gnuget.org" target="_blank">David Valdez</a></b> el 8 Marzo 2010.
+								</div>
+				<p>Pregunta, tienes contemplado estos dos métodos? <br />
+<br />
+<a href="http://apiwiki.twitter.com/Twitter-REST-API-Method:-account update_profile_image" target="_blank">http://apiwiki.twitter.com/Twitter-REST-API-Method:-account update_profile_image</a><br />
+<br />
+<a href="http://apiwiki.twitter.com/Twitter-REST-API-Method:-account update_profile_background_image" target="_blank">http://apiwiki.twitter.com/Twitter-REST-API-Method:-account update_profile_background_image</a><br />
+<br />
+Donde la api de twitter espera   la imagen como multipart data en el request?</p>
+			</div>
+		</div>
+		<!-- <hr /> -->				<div class="comment"><a name="comment-5"></a>
+			<div class="cavatar"><img src="http://www.gravatar.com/avatar/f9350f7bff593dc15d101e1d7ae36885?s=54&amp;d=http://scromega.github.com/tuentiAPI/files/no-avatar.png" alt="" width="54" height="54" /></div>
+			<div class="ccontent">
+				<div class="cinfo">
+				<a href="#comment-5">#5</a> <b><a rel="nofollow" href="http://about.me/scromega" target="_blank">scromega</a></b> el 9 Marzo 2010.
+								</div>
+				<p><a href="#comment-4">#4</a> David Valdez: Creo que ni la class &quot;oficial&quot; (la de <a href="http://github.com/abraham" target="_blank">http://github.com/abraham</a> ) da soporte a esos métodos. Yo he tratado por un rato de implementarlo y no he sido capaz, mañana seguiré haciendo pruebas. Si llego a implementarlo, actualizaría la class en Github, por lo que te animo a que estés pendiente del mismo.</p>
+			</div>
+		</div>
+		<!-- <hr /> -->				<div class="comment"><a name="comment-6"></a>
+			<div class="cavatar"><img src="http://www.gravatar.com/avatar/1bbab8b42a5f9a0435c1a7b2ce787afd?s=54&amp;d=http://scromega.github.com/tuentiAPI/files/no-avatar.png" alt="" width="54" height="54" /></div>
+			<div class="ccontent">
+				<div class="cinfo">
+				<a href="#comment-6">#6</a> <b><a rel="nofollow" href="http://gnuget.org" target="_blank">David Valdez</a></b> el 9 Marzo 2010.
+								</div>
+				<p>Hola,<br />
+<br />
+Tienes razón también probe con esa biblioteca sin exito, pero después de 3  días  peleandome con eso  encontré esta que hace el truco<br />
+<br />
+<a href="http://wiki.github.com/jmathai/twitter-async/" target="_blank">http://wiki.github.com/jmathai/twitter-async/</a><br />
+<br />
+Espero te de ideas para que implementes esos métodos en tu biblioteca que esta muy buena :)<br />
+<br />
+David.</p>
+			</div>
+		</div>
+		<!-- <hr /> -->				<div class="comment"><a name="comment-7"></a>
+			<div class="cavatar"><img src="http://www.gravatar.com/avatar/20fa17707af3b5417a18b59ed3041919?s=54&amp;d=http://scromega.github.com/tuentiAPI/files/no-avatar.png" alt="" width="54" height="54" /></div>
+			<div class="ccontent">
+				<div class="cinfo">
+				<a href="#comment-7">#7</a> <b><a rel="nofollow" href="http://botiz.net" target="_blank">Xytry</a></b> el 17 Marzo 2010.
+								</div>
+				<p><a href="#comment-3">#3</a> rayko: Gracias, lo probare :D</p>
+			</div>
+		</div>
+		<!-- <hr /> -->				<div class="comment"><a name="comment-8"></a>
+			<div class="cavatar"><img src="http://www.gravatar.com/avatar/20fa17707af3b5417a18b59ed3041919?s=54&amp;d=http://scromega.github.com/tuentiAPI/files/no-avatar.png" alt="" width="54" height="54" /></div>
+			<div class="ccontent">
+				<div class="cinfo">
+				<a href="#comment-8">#8</a> <b><a rel="nofollow" href="http://botiz.net" target="_blank">Xytry</a></b> el 17 Marzo 2010.
+								</div>
+				<p><a href="#comment-3">#3</a> rayko: Gracias, Me sirvio a la perfeccion :D , bueno, unos ligeros cambios pero funciona . :D</p>
+			</div>
+		</div>
+		<!-- <hr /> -->				<div class="comment"><a name="comment-9"></a>
+			<div class="cavatar"><img src="http://www.gravatar.com/avatar/55dcca39a222d2ebd0e029ffdca942ae?s=54&amp;d=http://scromega.github.com/tuentiAPI/files/no-avatar.png" alt="" width="54" height="54" /></div>
+			<div class="ccontent">
+				<div class="cinfo">
+				<a href="#comment-9">#9</a> <b>empezando</b> el 23 Marzo 2010.
+								</div>
+				<p>Hola. Por mas que intento registrar la aplicación que quiero probar siempre me dice:<br />
+No se puede registrar esta solicitud. Compruebe la configuración de registro. <br />
+No sé en que falla.<br />
+Saludos</p>
+			</div>
+		</div>
+		<!-- <hr /> -->				<div class="comment"><a name="comment-10"></a>
+			<div class="cavatar"><img src="http://www.gravatar.com/avatar/038ad2f0a5cdecb63505e4089b303a34?s=54&amp;d=http://scromega.github.com/tuentiAPI/files/no-avatar.png" alt="" width="54" height="54" /></div>
+			<div class="ccontent">
+				<div class="cinfo">
+				<a href="#comment-10">#10</a> <b>rayko</b> el 24 Marzo 2010.
+								</div>
+				<p><a href="#comment-8">#8</a> Xytry: me alegra :D</p>
+			</div>
+		</div>
+		<!-- <hr /> -->				<div class="comment"><a name="comment-11"></a>
+			<div class="cavatar"><img src="http://www.gravatar.com/avatar/f9350f7bff593dc15d101e1d7ae36885?s=54&amp;d=http://scromega.github.com/tuentiAPI/files/no-avatar.png" alt="" width="54" height="54" /></div>
+			<div class="ccontent">
+				<div class="cinfo">
+				<a href="#comment-11">#11</a> <b><a rel="nofollow" href="http://about.me/scromega" target="_blank">scromega</a></b> el 25 Marzo 2010.
+								</div>
+				<p><a href="#comment-9">#9</a> empezando: ¿Rellenaste todos los campos correctamente? :S Yo acabo de registrar una aplicación para probar y he se ha registrado correctamente. De todas formas algo leí de que Twitter anda con problemas con el OAuth, igual es por eso que no pudiste registrarla.<br />
+<br />
+<a href="#comment-8"><br />
+#8</a> Xytry: Me alegro de que con la ayuda de <b>rayko</b> pudieras hacer lo que querías :D</p>
+			</div>
+		</div>
+		<!-- <hr /> -->				<div class="comment"><a name="comment-12"></a>
+			<div class="cavatar"><img src="http://www.gravatar.com/avatar/55dcca39a222d2ebd0e029ffdca942ae?s=54&amp;d=http://scromega.github.com/tuentiAPI/files/no-avatar.png" alt="" width="54" height="54" /></div>
+			<div class="ccontent">
+				<div class="cinfo">
+				<a href="#comment-12">#12</a> <b>empezando</b> el 25 Marzo 2010.
+								</div>
+				<p>Muchas gracias scromega<br />
+<br />
+Los datos que pongo son:<br />
+<br />
+<br />
+Imagen de: 29,3 KiB <br />
+<br />
+Application Name:  	Aplicacion_de_Prueba	<br />
+Description: 		Mi prueba. 	<br />
+Application Website: 	<a href="http://twitter.com/mitwitter" target="_blank">http://twitter.com/mitwitter</a><br />
+Organization:  PARTICULAR<br />
+Website: <a href="http://www.marca.es" target="_blank">http://www.marca.es</a> 	<br />
+Application Type:	Browser<br />
+Callback URL: <a href="http://miprueba.blogspot.com/" target="_blank">http://miprueba.blogspot.com/</a>  	<br />
+Default Access type:  	  Read &amp; Write<br />
+Use Twitter for login: 	Yes, use Twitter for login</p>
+			</div>
+		</div>
+		<!-- <hr /> -->				<div class="comment"><a name="comment-13"></a>
+			<div class="cavatar"><img src="http://www.gravatar.com/avatar/55dcca39a222d2ebd0e029ffdca942ae?s=54&amp;d=http://scromega.github.com/tuentiAPI/files/no-avatar.png" alt="" width="54" height="54" /></div>
+			<div class="ccontent">
+				<div class="cinfo">
+				<a href="#comment-13">#13</a> <b>empezando</b> el 26 Marzo 2010.
+								</div>
+				<p>Ya la he registrado. No me hbía dado cuenta que la descripción es minimo 30 carácteres<br />
+ ¡¡ Gracias !!</p>
+			</div>
+		</div>
+		<!-- <hr /> -->				<div class="comment"><a name="comment-14"></a>
+			<div class="cavatar"><img src="http://www.gravatar.com/avatar/55dcca39a222d2ebd0e029ffdca942ae?s=54&amp;d=http://scromega.github.com/tuentiAPI/files/no-avatar.png" alt="" width="54" height="54" /></div>
+			<div class="ccontent">
+				<div class="cinfo">
+				<a href="#comment-14">#14</a> <b>empezando</b> el 26 Marzo 2010.
+								</div>
+				<p>Lo he probado y: ¡ muy bueno !<br />
+Gracias.</p>
+			</div>
+		</div>
+		<!-- <hr /> -->				<div class="comment"><a name="comment-15"></a>
+			<div class="cavatar"><img src="http://www.gravatar.com/avatar/55dcca39a222d2ebd0e029ffdca942ae?s=54&amp;d=http://scromega.github.com/tuentiAPI/files/no-avatar.png" alt="" width="54" height="54" /></div>
+			<div class="ccontent">
+				<div class="cinfo">
+				<a href="#comment-15">#15</a> <b>empezando</b> el 27 Marzo 2010.
+								</div>
+				<p>Hola de nuevo y gracias.<br />
+Una vez que tenemos los valores de toauth_at y toauth_ats, a ¿qué metodo se debe llamar para que el usuario entre directamente sin tener que pasar por <a href="https://twitter.com/login?," target="_blank">https://twitter.com/login?,</a> es decir ya que tengo sus &quot;token de acceso&quot; en mi aplicación que cuando quiera ir a Twitter entre directamente.<br />
+<br />
+Gracias</p>
+			</div>
+		</div>
+		<!-- <hr /> -->				<div class="comment"><a name="comment-17"></a>
+			<div class="cavatar"><img src="http://www.gravatar.com/avatar/a0d875878e0197cb0d5e4627934464f4?s=54&amp;d=http://scromega.github.com/tuentiAPI/files/no-avatar.png" alt="" width="54" height="54" /></div>
+			<div class="ccontent">
+				<div class="cinfo">
+				<a href="#comment-17">#17</a> <b>youdy</b> el 12 Octubre 2010.
+								</div>
+				<p>Saludos me ha parecido una muy buena explicacion, pero mmm soy novato, crees poder hecharme una mano con algunas dudas, es decir, por ejemplo yo quisiera usar google appa engine  y la primera duda es: se podra usar algo asi con JSP, segunda duda, no me queda claro si se tiene que instalar o no alguna libreria para autenticarse en OAuth. gracias desde ya...</p>
+			</div>
+		</div>
+		<!-- <hr /> -->				<div class="comment"><a name="comment-18"></a>
+			<div class="cavatar"><img src="http://www.gravatar.com/avatar/bcf05442cfc1df5eb5919d2ba8acc468?s=54&amp;d=http://scromega.github.com/tuentiAPI/files/no-avatar.png" alt="" width="54" height="54" /></div>
+			<div class="ccontent">
+				<div class="cinfo">
+				<a href="#comment-18">#18</a> <b><a rel="nofollow" href="http://tinosoft.net/" target="_blank">tinosoft</a></b> el 20 Noviembre 2010.
+								</div>
+				<p>probé lo que pusiste en el<a href="#comment-3"> #3</a> y salió &quot;array&quot;.</p>
+			</div>
+		</div>
+		<!-- <hr /> -->				<div class="comment"><a name="comment-19"></a>
+			<div class="cavatar"><img src="http://www.gravatar.com/avatar/90ea30ccc8a981c3a01d7a67a3306ce2?s=54&amp;d=http://scromega.github.com/tuentiAPI/files/no-avatar.png" alt="" width="54" height="54" /></div>
+			<div class="ccontent">
+				<div class="cinfo">
+				<a href="#comment-19">#19</a> <b>Alexhali</b> el 18 Enero 2011.
+								</div>
+				<p>Heche a andar el ejemplo, y al dar click en el enlance para autenticar me pide asignarle permisos de acceso a la aplicacion, posteriormente me dice que tengo que introducir un PIN en la aplicacion para finalizar el proceso, ¿como hago eso?</p>
+			</div>
+		</div>
+		<!-- <hr /> -->
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Inicio Estadisticas -->
+<!-- Fin Estadisticas -->
+
 </body>
 </html>
